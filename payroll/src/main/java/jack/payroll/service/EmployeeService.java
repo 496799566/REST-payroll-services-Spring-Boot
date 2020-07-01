@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jack.payroll.exception.EmployeeNotFoundException;
 import jack.payroll.model.Employee;
 import jack.payroll.repository.EmployeeRepository;
 
@@ -19,7 +20,7 @@ public class EmployeeService {
 	}
 	
 	public Employee getEmployeeById(Long id) {
-		return repo.findById(id).get();
+		return repo.findById(id).orElseThrow(() -> new EmployeeNotFoundException(id));
 	}
 	
 	public Employee addNewEmployee(Employee employee) {
@@ -27,8 +28,12 @@ public class EmployeeService {
 	}
 	
 	public Employee updateEmployeeById(Employee employee, Long id) {
-		employee.setId(id);
-		return repo.save(employee);
+		if ( repo.existsById(id) ) {
+			employee.setId(id);
+			return repo.save(employee);
+		} else {
+			throw new EmployeeNotFoundException(id);
+		}
 	}
 	
 	public void deleteEmployeeById(Long id) {
