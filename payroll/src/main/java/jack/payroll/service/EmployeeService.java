@@ -1,10 +1,14 @@
 package jack.payroll.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 
+import jack.payroll.controller.EmployeeController;
 import jack.payroll.exception.EmployeeNotFoundException;
 import jack.payroll.model.Employee;
 import jack.payroll.repository.EmployeeRepository;
@@ -16,11 +20,32 @@ public class EmployeeService {
 	private EmployeeRepository repo ;
 	
 	public List<Employee> getAllEmployees() {
-		return repo.findAll();
+		
+		List<Employee> employeeList = repo.findAll();
+		
+		return employeeList.stream()
+				.map( employee -> {
+					employee.add( WebMvcLinkBuilder.linkTo( getController().getEmployeeById(employee.getId())	).withSelfRel());
+					employee.add( WebMvcLinkBuilder.linkTo( getController().getAll()							).withRel("employees"));
+					return employee;
+				})
+				.collect(Collectors.toList());
 	}
 	
 	public Employee getEmployeeById(Long id) {
-		return repo.findById(id).orElseThrow(() -> new EmployeeNotFoundException(id));
+		Employee employee = repo.findById(id).orElseThrow(() -> new EmployeeNotFoundException(id));
+		
+		Link self 		= WebMvcLinkBuilder.linkTo( getController().getEmployeeById(id)	).withSelfRel();
+		Link employees 	= WebMvcLinkBuilder.linkTo( getController().getAll()			).withRel("employees");
+		
+		employee.add( self );
+		employee.add( employees );
+		
+		return employee;
+	}
+	
+	private EmployeeController getController() {
+		return WebMvcLinkBuilder.methodOn(EmployeeController.class);
 	}
 	
 	public Employee addNewEmployee(Employee employee) {
