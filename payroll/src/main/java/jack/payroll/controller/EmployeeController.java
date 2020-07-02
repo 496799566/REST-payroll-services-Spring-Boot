@@ -1,8 +1,7 @@
 package jack.payroll.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,7 @@ public class EmployeeController {
 	private EmployeeService employeeService;
 	
 	@GetMapping("employees")
-	public List<Employee> getAll() {
+	public CollectionModel<Employee> getAll() {
 		return employeeService.getAllEmployees();
 	}
 	
