@@ -27,7 +27,7 @@ public class EmployeeService {
 		
 		return repo.findAll() // list of Employee object from the database
 				.stream()
-				.map( employee -> assembler.toModel(employee) ) // add HATEOAS links, self and employees
+				.map( assembler::toModel ) 	// add HATEOAS links, self and employees
 				.collect( Collectors.toList() );
 	}
 	
