@@ -26,8 +26,10 @@ public class EmployeeService {
 	
 	public CollectionModel<Employee> getAllEmployees() {
 		
-		return assembler.toCollectionModel(repo.findAll());
-		
+		return assembler.toCollectionModel(repo.findAll())
+				// add the link to self;
+				.add( WebMvcLinkBuilder.linkTo( WebMvcLinkBuilder.methodOn(EmployeeController.class).getAll() ).withSelfRel());
+	
 	}
 	
 	public Employee getEmployeeById(Long id) {
