@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,10 @@ public class EmployeeService {
 	@Autowired
 	private EmployeeAssembler assembler;
 	
-	public List<Employee> getAllEmployees() {
+	public CollectionModel<Employee> getAllEmployees() {
 		
-		return repo.findAll() // list of Employee object from the database
-				.stream()
-				.map( assembler::toModel ) 	// add HATEOAS links, self and employees
-				.collect( Collectors.toList() );
+		return assembler.toCollectionModel(repo.findAll());
+		
 	}
 	
 	public Employee getEmployeeById(Long id) {
