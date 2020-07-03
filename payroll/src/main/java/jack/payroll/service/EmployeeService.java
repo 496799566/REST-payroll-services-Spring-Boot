@@ -1,12 +1,14 @@
 package jack.payroll.service;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jack.payroll.assembler.EmployeeAssembler;
@@ -28,7 +30,7 @@ public class EmployeeService {
 		
 		return assembler.toCollectionModel(repo.findAll())
 				// add the link to self;
-				.add( WebMvcLinkBuilder.linkTo( WebMvcLinkBuilder.methodOn(EmployeeController.class).getAll() ).withSelfRel());
+				.add( linkTo( methodOn(EmployeeController.class).getAll() ).withSelfRel());
 	
 	}
 	
@@ -40,10 +42,20 @@ public class EmployeeService {
 	}
 	
 	
-	public Employee addNewEmployee(Employee employee) {
+	public ResponseEntity<? extends Employee> addNewEmployee(Employee employee) {
 		
-		return repo.save(employee);
+		Employee model = assembler.toModel(repo.save(employee));
 		
+		return ResponseEntity
+				.created( getNewEmployeeURI(employee) )
+				.body( model);
+		
+	}
+
+	private URI getNewEmployeeURI(Employee employee) {
+		return linkTo(methodOn(EmployeeController.class).getEmployeeById(employee.getId()))
+				.withSelfRel()
+				.toUri();
 	}
 	
 	public Employee updateEmployeeById(Employee employee, Long id) {
@@ -62,6 +74,7 @@ public class EmployeeService {
 		repo.deleteById(id);
 		
 	}
+	
 	
 }
 
