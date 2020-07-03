@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -51,30 +53,38 @@ public class EmployeeService {
 				.body( model);
 		
 	}
-
-	private URI getNewEmployeeURI(Employee employee) {
-		return linkTo(methodOn(EmployeeController.class).getEmployeeById(employee.getId()))
-				.withSelfRel()
-				.toUri();
-	}
 	
-	public Employee updateEmployeeById(Employee employee, Long id) {
+	public ResponseEntity<?> updateEmployeeById(Employee employee, Long id) {
 		
 		if ( repo.existsById(id) ) {
+			
 			employee.setId(id);
-			return repo.save(employee);
+			repo.save(employee);
+			
+			return ResponseEntity
+					.status(HttpStatus.NO_CONTENT)
+					.location( getNewEmployeeURI( employee ) )
+					.build();
 		} else {
 			throw new EmployeeNotFoundException(id);
 		}
 		
 	}
 	
-	public void deleteEmployeeById(Long id) {
+	public ResponseEntity<?> deleteEmployeeById(Long id) {
 		
-		repo.deleteById(id);
+		if ( repo.existsById(id) ) {
+			repo.deleteById(id);
+		}
+		
+		return ResponseEntity.noContent().build();
 		
 	}
-	
-	
+
+	private URI getNewEmployeeURI(Employee employee) {
+		return linkTo(methodOn(EmployeeController.class).getEmployeeById(employee.getId()))
+				.withSelfRel()
+				.toUri();
+	}
 }
 
