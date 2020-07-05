@@ -5,7 +5,7 @@ This project is referenced from spring.io, for the complete tutorial on this pro
 
 https://spring.io/guides/tutorials/bookmarks/
 
-Two services are included within this project
+This project contains two RESTful services
 
 1. Employee service
 2. CustomerOrder service
