@@ -20,6 +20,11 @@ public class Employee extends RepresentationModel<Employee> {
 	public Employee() {
 		super();
 	}
+
+	public Employee(String name, String role) {
+		this.setName(name);
+		this.role = role;
+	}
 	
 	public Employee(String firstName, String lastName, String role) {
 		this.firstName = firstName;
