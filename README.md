@@ -3,7 +3,7 @@ A payroll service that manages the employees of a company. Store employee object
 
 This project is referenced from spring.io, for the complete tutorial on this project, go to the following link
 
-https://spring.io/guides/tutorials/bookmarks/
+https://spring.io/guides/tutorials/rest/
 
 This project contains two RESTful services
 
